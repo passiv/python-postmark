@@ -74,14 +74,13 @@ class EmailBackend(BaseEmailBackend):
         if not email_messages:
             return
 
-        sent, instance = self._send(email_messages)
+        sent = self._send(email_messages)
 
-        if sent and self.return_message_id:
-            return [m.message_id for m in instance.messages]
-        elif sent:
+        if sent is True:
             return len(email_messages)
         else:
             return sent
+        return 0
 
     def _build_message(self, message):
         """A helper method to convert a PMEmailMessage to a PMMail"""
@@ -169,9 +168,9 @@ class EmailBackend(BaseEmailBackend):
         try:
             to_send.send(test=self.test_mode)
             if self.return_message_id:
-                return str(to_send.message_id)
+                str(to_send.message_id)
         except:
             if self.fail_silently:
-                return False, to_send
+                return False
             raise
-        return True, to_send
+        return True
