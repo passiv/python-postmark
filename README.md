@@ -37,10 +37,11 @@ POSTMARK_API_KEY     = 'your-key'
 POSTMARK_SENDER      = 'sender@signature.com'
 POSTMARK_TEST_MODE   = [True/False]
 POSTMARK_TRACK_OPENS = [True/False]
+POSTMARK_RETURN_MESSAGE_ID = [True/False] Return list of sent message-ids while using Django backend. Defaults to False, returns count.
 ```
-    
+
 to your settings.py file, and when you create a new PMMail object, it will grab the API key and sender automatically.  Make sure the sender email address is one of your Sender Signature email addresses in Postmark. You can also customize the name on the sender by changing the format from 'email@address.com' to 'Sender Name <email@address.com>' as long as the email part is part of a Sender Signature in Postmark.
-    
+
 Using `POSTMARK_TEST_MODE=True` will not actually send the email, but instead dump the JSON packet that would be sent to Postmarkapp.com. By default this setting is False, and if not specified, will be assumed to be False.
 
 To reroute all Django E-Mail functions like `send_mail()` and `mail_admins()` through postmark use the following setting:
@@ -50,6 +51,23 @@ EMAIL_BACKEND = 'postmark.django_backend.EmailBackend'
 ```
 
 But keep in mind that even when using standard Django functions the sender must be registered with postmarkapp.com.
+
+#### Adding a Tag to the Message
+One tag can be set via Django Mail system by setting both the `X-PM-Tag` header, and setting the variable `tag` on the EmailMessage object.
+
+e.g. using `EmailMultiAlternatives` from `django.core.mail`
+
+```python
+from django.core.mail import get_connection, EmailMultiAlternatives
+
+tag = "my-tag"
+headers = { 'X-PM-Tag': tag }
+
+mail = EmailMultiAlternatives(subject, msg_plain, from_email, recipients, connection=connection, headers=headers)
+
+mail.tag = tag
+mail.send()
+```
     
 Tornado
 -------
