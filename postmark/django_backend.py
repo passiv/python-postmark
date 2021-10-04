@@ -64,7 +64,7 @@ class EmailBackend(BaseEmailBackend):
         if not email_messages:
             return
 
-        sent = self._send(email_messages)
+        sent, instance = self._send(email_messages)
 
         if sent and self.return_message_id:
             return [m.message_id for m in instance.messages]
